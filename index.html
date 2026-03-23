@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arithmetic Socials</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #2f1e20, #38149c);
+    color: white;
+    text-align: center;
+}
+
+.light-mode { background: #111; color: #f0eaea; }
+
+.container { margin-top: 50px; }
+
+img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid white;
+    cursor: pointer;
+}
+
+h1 { margin: 10px 0; }
+
+.links a {
+    display: block;
+    margin: 15px auto;
+    padding: 12px;
+    width: 80%;
+    max-width: 320px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    backdrop-filter: blur(10px);
+    transition: 0.3s;
+}
+
+.links a:hover {
+    transform: scale(1.05);
+    background: white;
+    color: black;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* ===================== */
+/* OVERLAY (FULL IMAGE) */
+/* ===================== */
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.95);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#overlay.active {
+    display: flex;
+}
+
+#overlay img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Footer */
+.footer {
+    margin-top: 40px;
+    padding: 16px;
+}
+
+.footer .divider {
+    width: 80%;
+    height: 2px;
+    margin: 0 auto 12px;
+    background: rgba(255,255,255,0.25);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <img src="profile.jpg" alt="Profile picture" id="profilePic">
+
+    <!-- OVERLAY -->
+    <div id="overlay">
+        <img src="profile.jpg" id="fullImage" alt="Full view">
+    </div>
+
+    <h1>Angelo Katchy <br>(Arithmetic_AA)</h1>
+    <p>Follow & Subscribe 🚀</p>
+
+    <div class="links">
+        <a href="https://www.instagram.com/angeloarithmetic"><i class="fab fa-instagram" style="color:#E4405F;"></i> Instagram</a>
+        <a href="https://youtube.com/@arithmeticangelo"><i class="fab fa-youtube" style="color:#FF0000;"></i> YouTube 1</a>
+        <a href="https://youtube.com/@fascinatingstories-z1b"><i class="fab fa-youtube" style="color:#FF0000;"></i> YouTube 2</a>
+        <a href="https://www.tiktok.com/@arithmeticangelo"><i class="fab fa-tiktok"></i> TikTok</a>
+        <a href="https://x.com/Arithmetic_AA"><i class="fab fa-x"></i> Twitter / X</a>
+        <a href="https://whatsapp.com/channel/0029VbBMdMmGU3BCuy55JX0h"><i class="fab fa-whatsapp" style="color:#25D366;"></i> WhatsApp</a>
+        <a href="https://www.facebook.com/profile.php?id=61582290304696"><i class="fab fa-facebook" style="color:#1877f2;"></i> Facebook</a>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="divider"></div>
+        <p>© <span id="year"></span> All Rights Reserved | Developer : Arithmetic Team</p>
+    </div>
+</div>
+
+<script>
+// Theme toggle (kept simple)
+const yearEl = document.getElementById("year");
+yearEl.textContent = new Date().getFullYear();
+
+// Image controls
+const profilePic = document.getElementById("profilePic");
+const overlay = document.getElementById("overlay");
+const fullImage = document.getElementById("fullImage");
+
+let scale = 1;
+let lastTap = 0;
+let startY = 0;
+let currentY = 0;
+
+// Open
+profilePic.addEventListener("click", () => {
+  overlay.classList.add("active");
+  scale = 1;
+  fullImage.style.transform = "scale(1)";
+});
+
+// Close
+function closeOverlay() {
+  overlay.classList.remove("active");
+}
+
+// Double tap zoom
+overlay.addEventListener("touchend", () => {
+  let now = new Date().getTime();
+  if (now - lastTap < 300) {
+    scale = (scale === 1) ? 2 : 1;
+    fullImage.style.transform = `scale(${scale})`;
+  }
+  lastTap = now;
+});
+
+// Swipe down to close
+overlay.addEventListener("touchstart", (e) => {
+  startY = e.touches[0].clientY;
+});
+
+overlay.addEventListener("touchmove", (e) => {
+  currentY = e.touches[0].clientY;
+  let diff = currentY - startY;
+
+  if (diff > 0 && scale === 1) {
+    fullImage.style.transform = `translateY(${diff}px)`;
+  }
+});
+
+overlay.addEventListener("touchend", () => {
+  if (currentY - startY > 120 && scale === 1) {
+    closeOverlay();
+  } else {
+    fullImage.style.transform = `scale(${scale})`;
+  }
+});
+
+// Click outside to close
+overlay.addEventListener("click", (e) => {
+  if (e.target === overlay) {
+    closeOverlay();
+  }
+});
+
+// Scroll zoom (desktop)
+overlay.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  if (e.deltaY < 0) scale += 0.1;
+  else if (scale > 1) scale -= 0.1;
+
+  fullImage.style.transform = `scale(${scale})`;
+});
+</script>
+
+</body>
+</html>
+
+
